@@ -190,17 +190,9 @@ struct number_t
 - Express `what` instead of `why` or `how`.
 - Prefer using suffix `_t`.
 
-#### 1.3.5. Function names
-
-- Start with module prefix, follow by a `verb` what it do, and finally is objects. For example `cloud_mgr` do `publish` a MQTT `heart_breath` message:
-
-```c
-int cloud_mgr_publish_heart_breath(int timestamp);
-```
-
 ## 2. Program organization
 
-### 2.1. Program file
+### 2.1. Program files
 
 - A C program consists of one or more program files, one of which contains the `main()` function, which acts as the driver of the program.
 - When your program is large enough to require several files, you should use encapsulation and data hiding techniques to group logically related functions and data structures into the same files. Organize your programs as follows:
@@ -210,7 +202,15 @@ int cloud_mgr_publish_heart_breath(int timestamp);
   - 4. Use header files to encapsulation definitions and declarations of variables and functions.
   - 5. Write a `Makefile` to make re-compiles more efficient.
 
-### 2.2. README file
+- Maximum number of characters per lines is 80. Configure with vscode:
+
+```json
+{
+    "editor.rulers": [80, 120, 140]
+}
+```
+
+#### 2.1.1. README files
 
 - A README file should be used to explain `what` that the program does and `how` it is organized and to document issues for the program as a whole. For example, a README file might include:
   - All conditional compilation flags and their meanings.
@@ -242,7 +242,7 @@ int cloud_mgr_publish_heart_breath(int timestamp);
     └── *.c, *.h, */
 ```
 
-### 2.3. Header files
+#### 2.1.2. Header files
 
 - Header files are used to encapsulate logically related ideas;
   - For example the header file `time.h` defines two constants, three structures, and declares seven functions needed to process time.
@@ -274,8 +274,8 @@ int cloud_mgr_publish_heart_breath(int timestamp);
 #include <system_file>
 #include <system_file>
 
-#include <user_file>
-#include <user_file>
+#include "user_file"
+#include "user_file"
 
 /* Public defines ------------------------------------------------------------*/
 #define MACRO_1 val     /* MACRO_1 description. */
@@ -304,10 +304,197 @@ struct number_t
 };
 
 /* Public function prototypes ------------------------------------------------*/
-int calculate_number();
+/**
+ * @brief   - calculate_number - Brief your function.
+ *
+ * @param   - a - describe param.
+ * @param   - b - describe param.
+ *
+ * @return  - What function return.
+ * 
+ * @note    - NOTE 1.
+ */
+int calculate_number(int a, int b);
 ```
 
-## 4. Program behavior
+#### 2.1.3. Module files
+
+- A module file contains the logically related functions, constants, types, data definitions and declarations, and functions. Modules are similar to a program file except that they don't contain the `main()` function.
+
+- Example of module file:
+
+```c
+#include <system_file>
+#include <system_file>
+
+#include "user_file"
+#include "user_file"
+
+#include "corresponding_header_file"
+
+/* Private defines -----------------------------------------------------------*/
+#define DEVICE_NAME_MAX_LENGTH 50
+
+/* Private types -------------------------------------------------------------*/
+typedef int device_id_t;
+
+/**
+ * @brief   - device_t - This structure represent a device.
+ *
+ * @param   - name - device name.
+ * @param   - id - device id.
+ * @param   - device interrupt number.
+ */
+struct device_t
+{
+    const char *name;
+    device_id_t id;
+    int interrupt_number;
+};
+
+/* Private variables ---------------------------------------------------------*/
+static device_t main = {0}; /* AVOID global variable. */
+
+/* Private function prototypes -----------------------------------------------*/
+/**
+ * @brief   - device_enable_interrupt - Brief your function.
+ *
+ * @param   - self - self object.
+ * @return  - What function return.
+ * 
+ * @note    - NOTE 1.
+ */
+static int device_enable_interrupt(device_t *self);
+
+/**
+ * @brief   - device_calculate_id - Brief your function.
+ *
+ * @param   - self - self object.
+ * @return  - What function return.
+ * 
+ * @note    - NOTE 1.
+ */
+static inline int device_calculate_id(device_t *self);
+
+/* Private functions ---------------------------------------------------------*/
+static int device_enable_interrupt(device_t *self)
+{
+    return 0;
+}
+
+static inline int device_calculate_id(device_t *self)
+{
+    return 0;
+}
+
+/* Public functions ----------------------------------------------------------*/
+int device_write(device_t *self, uint8_t *buf, uint16_t length)
+{
+    return 0;
+}
+```
+
+#### 2.1.4. Makefile
+
+- Makefile are used on some systems to provide a mechanism for efficiently re-compiling C code. With `Makefile`, the `make` utility re-compiles files that have been changed since the last compilation.
+- The Make file:
+  - Lists all file that are to be included as part of the program.
+  - Contains comments documenting what files are part of libraries.
+  - Demonstrates dependencies, e.g., source files and associated headers using implicit and explicit rules.
+
+```makefile
+# Makefile for UIX testing ..
+#
+# Cong. Programmer
+#
+# This makefile can build 2 different executables. The executables share some
+# of the same code and share libraries.
+
+#
+# Object code for executables
+#
+INIT_OBJS = seq_init.o seq_drv.o
+
+LOAD_OBJS = load_drv.o \
+    seq_load.o \
+    print_seq.o
+
+#
+# These are included in all executables.
+#
+OBJS = main.o stubs.o data.o
+
+#
+# Include paths.
+#
+INCDIR = -I/u/home/cong/dev/include \
+        -I./include
+
+INTERNAL_DEFINES = -DTEST_NO_DATA
+DEFINES = 
+DEBUG = -g
+CUSTOM_FLAGS = -posix -W3 -DENABLE_IPV6
+CFLAGS = $(DEBUG) $(CUSTOM_FLAGS) $(INCDIR) $(DEFINES) \
+    $(INTERNAL_DEFINES)
+
+#
+# Libraries.
+#
+PROT_LIBS = -lmqtt -lrc -lsocket
+LIBS = -lpthread
+LIB_DIR = -L/home/cong/mqtt/ -L/usr/lib/custom_path
+
+#
+# Compilation for the executables ..o
+#
+module_init:
+    $(CC) $(CFLAGS) -o module_init $(INIT_OBJS) $(OBJS) $(PROT_LIBS)
+
+module_load:
+    $(CC) $(CFLAGS) -o module_init $(INIT_OBJS) $(OBJS) $(PROT_LIBS)
+
+all: module_init module_load
+
+clean:
+    rm $(INIT_OBJS) $(LOAD_OBJS)
+
+depend:
+    makedepend -- $(CFLAGS) -- "/bin/is *.c"
+
+# DO NOT DELETE THIS LINE -- make depends on it.
+
+# [a jillion lines that are dependencies generated by makedepend go here]
+```
+
+
+## 3. Data types, operators, and expressions
+
+### 3.1. Variables
+
+### 3.5. Macro
+
+## 4. Statements and control flow
+
+- Using `if else` for :
+
+```c
+int func()
+{
+    if ((condition_1 || condition_2) &&
+        (condition_3 || condition_4))
+    {
+        handle_condition_1();
+    }
+    else if (condition_5)
+    {
+        handle_condition_5();
+    }
+    else
+    {
+        otherwise();
+    }
+}
+```
 
 ## 5. OOP mindset
 
@@ -404,6 +591,16 @@ struct device_t
 struct network_device_t
 {
     struct device_t dev;
-    queue_t rx _queue;
+    queue_t rx_queue;
 };
 ```
+
+## 6. portability and performance
+
+## 7. Security
+
+## 8. References
+
+- NASA coding style: [NASA](https://ntrs.nasa.gov/api/citations/19950022400/downloads/19950022400.pdf)
+- GNU C standards: [GNU](https://www.gnu.org/prep/standards/standards.pdf)
+- Net BSD: [BSD](https://users.ece.cmu.edu/~eno/coding/CCodingStandard.html)
