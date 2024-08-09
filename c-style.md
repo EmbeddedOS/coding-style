@@ -190,7 +190,122 @@ struct number_t
 - Express `what` instead of `why` or `how`.
 - Prefer using suffix `_t`.
 
+#### 1.3.5. Function names
+
+- Start with module prefix, follow by a `verb` what it do, and finally is objects. For example `cloud_mgr` do `publish` a MQTT `heart_breath` message:
+
+```c
+int cloud_mgr_publish_heart_breath(int timestamp);
+```
+
 ## 2. Program organization
+
+### 2.1. Program file
+
+- A C program consists of one or more program files, one of which contains the `main()` function, which acts as the driver of the program.
+- When your program is large enough to require several files, you should use encapsulation and data hiding techniques to group logically related functions and data structures into the same files. Organize your programs as follows:
+  - 1. Create a README file to document what the program does.
+  - 2. Group the main function with other logically related functions in a program file.
+  - 3. Use module files to group logically related functions (not including the main function).
+  - 4. Use header files to encapsulation definitions and declarations of variables and functions.
+  - 5. Write a `Makefile` to make re-compiles more efficient.
+
+### 2.2. README file
+
+- A README file should be used to explain `what` that the program does and `how` it is organized and to document issues for the program as a whole. For example, a README file might include:
+  - All conditional compilation flags and their meanings.
+  - Files that are machine dependent.
+  - Paths to reused components.
+
+- Generate the repository structure 2 layers with `tree -L 2`:
+
+```text
+.
+├── docs                        # General documentations.
+│   ├── *.md
+│   ├── video                   # Documentations from videos, Youtube, etc.
+│   │   └── *.md
+│   └── wiki                    # https://wiki.osdev.org/ or Wikipedia, etc.
+│       └── *.md
+├── hw                          # Hardware code, emulator etc.
+│   └── qemu                    # QEMU emulator hardware components.
+│       └── *.c, *.h, */
+├── kernel                      # Kernel modules, drivers, sub-systems. 
+│   ├── examples                # Example code of basic features.
+│   │   └── *.c, *.h, */
+│   └── *.c, *.h, */
+├── Makefile                    # Global make file to build system.
+├── README.md                   # README for the repository.
+└── usr                         # User application codes.
+    ├── examples                # Example code for basic features.
+    │   └── *.c, *.h, */
+    └── *.c, *.h, */
+```
+
+### 2.3. Header files
+
+- Header files are used to encapsulate logically related ideas;
+  - For example the header file `time.h` defines two constants, three structures, and declares seven functions needed to process time.
+- Header files may be selectively included in your program files to limit visibility to only those functions that need them.
+
+- Use `#include <system_file>` for system include files.
+- Use `#include "user_file"` for user include files.
+- Contain in header files data definitions, declarations typedef, and enums that **ARE NEEDED** by more than one program.
+- Organize headers by function.
+- Put declarations for separate subsystems in separate header files.
+- If a set of declarations is likely to change when code is ported from one platform to another, put those declarations in a separate header file.
+- Include header files that declare functions or external variables in the file that defines the function or variable. By that way, the compiler can do type checking and the external declaration will always agree with the definition.
+- Do not nested header files.
+
+```c
+/**
+ * @file    - your file name.
+ * @author  - your name (you@domain.com)
+ * @brief   - Brief your file here, `purpose`, `what` and `why`.
+ *
+ * @version 0.1
+ * @date 2023-08-14
+ * 
+ * @copyright Copyright (c) 2023
+ */
+
+#pragma once
+
+#include <system_file>
+#include <system_file>
+
+#include <user_file>
+#include <user_file>
+
+/* Public defines ------------------------------------------------------------*/
+#define MACRO_1 val     /* MACRO_1 description. */
+#define MACRO_2 val     /* MACRO_2 description. */
+#define MACRO_3 val     /* MACRO_3 description. */
+
+/**
+ * @brief   - This macro need to explain in multiple lines. Using block comment
+ *            instead.
+ */
+#define MACRO_4 val
+
+/* Public types --------------------------------------------------------------*/
+/**
+ * @brief   - struct number_t - Describe your structure here.
+ * @param   - number_1 - Here is number 1.
+ * @param   - number_2 - Here is number 2.
+ * 
+ * @note    - Some notes when manipulate with the structure.
+ */
+struct number_t
+{
+    double number_1;    /* Value in double.     */
+    int number_2;       /* Value in integer.    */
+    int count;          /* Number of elements.  */
+};
+
+/* Public function prototypes ------------------------------------------------*/
+int calculate_number();
+```
 
 ## 4. Program behavior
 
