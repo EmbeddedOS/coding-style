@@ -595,7 +595,9 @@ handle_step_1_failure:
 
 ## 3. Data types, operators, and expressions
 
-### 3.1. Macro
+### 3.1. Variables
+
+### 3.5. Macro
 
 ## 4. Statements and control flow
 
@@ -715,8 +717,16 @@ struct device_t
 struct network_device_t
 {
     struct device_t dev;
-    queue_t rx _queue;
+    queue_t rx_queue;
 };
 ```
 
 ## 6. portability and performance
+
+## 7. Security
+
+## 8. References
+
+- NASA coding style: [NASA](https://ntrs.nasa.gov/api/citations/19950022400/downloads/19950022400.pdf)
+- GNU C standards: [GNU](https://www.gnu.org/prep/standards/standards.pdf)
+- Net BSD: [BSD](https://users.ece.cmu.edu/~eno/coding/CCodingStandard.html)
