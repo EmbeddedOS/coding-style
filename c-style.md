@@ -721,11 +721,19 @@ struct network_device_t
 };
 ```
 
-## 6. portability and performance
+## 6. Debugging
 
-## 7. Security
+- Always enable GNU sanitizer in development (using link static if perform the cross compiling and avoid copy the shared lib to the target).
 
-## 8. References
+```bash
+gcc -fsanitize=address -static-libasan -g
+```
+
+## 7. Portability and performance
+
+## 8. Security
+
+## 9. References
 
 - NASA coding style: [NASA](https://ntrs.nasa.gov/api/citations/19950022400/downloads/19950022400.pdf)
 - GNU C standards: [GNU](https://www.gnu.org/prep/standards/standards.pdf)
