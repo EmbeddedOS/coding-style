@@ -595,9 +595,183 @@ handle_step_1_failure:
 
 ## 3. Data types, operators, and expressions
 
+- There are several general guidelines to follow when working with types:
+  - Define one variable or constant per line.
+  - Use short comments to explain all variables or constant.
+  - Group related variables and constants together.
+
 ### 3.1. Variables
 
-### 3.5. Macro
+- When declaring variables of the same type, declare each on a separate line **UNLESS** the variables are self-explanatory and related, for example:
+
+```c
+int year, month, day;
+int width, height;
+```
+
+- Add a brief comment to variable declarations:
+
+```c
+int x; /* comment. */
+int y; /* comment. */
+```
+
+#### 3.1.1. Structures
+
+- Structures enhance the logical organization of your code, offer consistent addressing, and will generally significantly increase the efficiency and performance of your programs.
+
+```c
+typedef struct
+{
+    char *name;
+    int type;
+    int flags;
+    int value;
+} symbol_t;
+
+symbol_t symbol_table[NUM];
+```
+
+#### 3.1.2. Automatic variables
+
+- An automatic variable can be initialized either where it is declared or just before it is used.
+  - If the variable is going to be used close to where it is declared, then initialize it where it is declared.
+  - However, if the variable will be used several pages from where it is declared, then it is better practice to initialize it just before it is used.
+
+### 3.2. Constants
+
+- When defining constants, capitalize constant names and include comments.
+
+- Const modifier:
+
+```c
+const int SIZE 32;          /* size in inches. */
+const int SIZE 16 + 16;     /* both evaluate to the number 32. */
+```
+
+- `#define` command, in general, avoid hard-coding numerical constants and array boundaries. Assign each a meaningful name a permanent value using `#define`. This makes maintenance of large and evolving programs easier because constant values can be changed uniformly by changing the `#define` and re-compiling:
+
+```c
+#define     NULL    0
+#define     EOS     '\0'
+#define     FALSE   0
+#define     TRUE    1
+```
+
+- Enumeration types, using this method, constant values can be generated, or you can assign the values.
+
+```c
+enum position
+{
+    LOW,
+    MIDDLE,
+    HIGH
+};
+```
+
+### 3.3. Pointers
+
+- Explicitly declare pointer entities (variables, function return values, and constants) with pointer type. Put the pointer qualifier (*) with the variable name rather than with the type.
+
+```c
+char *s;    /* Good. */
+char* t;    /* Bad. */
+```
+
+#### 3.3.1. Pointer conversions
+
+- Programs should not contain pointer conversions, except for the following:
+  - `NULL` (i.e. integer 0) may be assigned to any pointer.
+  - **Allocation functions** (e.g. `malloc()`) will guarantee safe alignment, so the (properly cast) returned value may be assigned to any pointer. Always use `sizeof()` to specify the amount of storage to be allocated.
+  - **Size**: Pointers to an object of given size may be converted to a pointer to an object of smaller size and back again without change.
+  - For example, a pointer-to-long may be assigned to a pointer-to-char variable which is later assigned back to a pointer-to-long. Any use of the intermediate pointer, other than assigning it back to the original type, creates machine-dependent code. Use it with caution.
+
+### 3.4. Operator formatting
+
+- No space around **Primary Operators `->`, `.` ,`[]`**:
+
+```c
+p->m;
+s.m;
+a[i];
+```
+
+- No space before parentheses following function names. Within parentheses, no space between expression and parentheses:
+
+```c
+exp(2, x)
+```
+
+- No space bw **unary operators** and their operands:
+
+```c
+!p;
+~b;
+++i;
+-n;
+*p;
+&x;
+```
+
+- **Casts** are the only exception. **DO** put a space between a cast and its operand:
+
+```c
+(long) m;
+```
+
+- Use **comma operators** exceedingly sparingly. One of the few appropriate places is in a for statement. For example:
+
+```c
+for (i = 0, j = 1; i < 5; i++, y++);
+```
+
+- Split a string of conditional operators that will not fit on one line onto separate lines, breaking after the logical operators:
+
+```c
+if ((p->next == NULL) &&
+    (total_count < needed) &&
+    (needed <= MAX_ALLOT) &&
+    (server_active(current_input)))
+{
+    statement_1;
+    statement_2;
+    statement_n;
+}
+```
+
+### 3.5. Assignment operators and expressions
+
+- **C is an expression language**. In C, an assignment statement such as `a = b` itself has a value that can be embedded in a larger context.
+
+- I recommend that you use this feature very **SPARINGLY**.
+
+```c
+/* non-embedded statements: recommended. */
+{
+    total = get_total();
+    if (total == 10)
+    {
+        printf("Goal achieved\n");
+    }
+}
+
+/* embedded statements: not recommended. */
+if ((total = get_total()) == 10)
+{
+    printf("Goal achieved\n");
+}
+```
+
+### 3.6. Condition Expression
+
+- Do not use conditional expressions if you can easily express the algorithm in a more clear, understandable manner. If you do use conditional expressions, use comments to aid the reader's understanding.
+
+```c
+z = (a > b) ? a : b; // OK.
+c = (a == b) ? d + f(a) : f(b) - d; // Hard to understand.
+```
+
+### 3.7. Function Macro
 
 ## 4. Statements and control flow
 
